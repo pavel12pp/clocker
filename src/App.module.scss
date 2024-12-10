@@ -1,0 +1,21 @@
+@use "@scss-tools/adaptiveMixin.scss";
+
+.wrapper {
+  display: flex;
+  position: relative;
+  width: 100%;
+  min-height: 100svh;
+  background-color: var(--primary-bgColor);
+  flex-direction: column;
+  align-items: center;
+} 
+
+.main {
+  @include adaptiveVariable(container-margin, (80, 60, 20));
+  display: grid;
+  width: 100%;
+  max-width: calc(100vw - 100px);
+  background-color: black;
+  grid-template-columns: repeat(3, auto);
+  flex-grow: 1;
+}

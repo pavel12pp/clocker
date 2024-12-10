@@ -1,0 +1,183 @@
+@use "sass:math";
+@use "sass:map";
+@use "sass:list";
+
+@function getScreenResolutions() {
+  @return (
+    (
+      canvas: 1920,
+      container: 1800
+    ),
+    (
+      canvas: 1440,
+      container: 1200
+    ),
+    (
+      canvas: 320,
+      container: 300
+    ),
+  );
+}
+@function getScreenCanvases($screenResolutions) {
+  $screenResolutions: getScreenResolutions();
+  $canvases: ();
+  @each $screenResolution in $screenResolutions {
+    $canvases: list.append($canvases, map.get($screenResolution, canvas))
+  };
+  @return $canvases;
+}
+@function getScreenContainers($screenResolutions) {
+  $screenResolutions: getScreenResolutions();
+  $containers: ();
+  @each $screenResolution in $screenResolutions {
+    $containers: list.append($containers, map.get($screenResolution, container))
+  };
+  @return $containers;
+}
+$screenResolutions: getScreenResolutions();
+$baseFontSize: 14;
+//Обязательно должен быть подключен setViewportWidth.js
+
+@mixin adaptivePixelProperty($property, $values: (0, 0), $screenResolutions: $screenResolutions, $baseFontSize: $baseFontSize) {
+  //Небольшая валидация: размеров адаптива должно быть не меньше 2, и колво значений свойств должно совпадать с колво значений для canvases и containers
+  $canvases: getScreenCanvases($screenResolutions);
+  $containers: getScreenContainers($screenResolutions);
+
+  @if list.length($values) >= 2 and list.length($canvases) == list.length($containers) and list.length($canvases) == list.length($values) {
+    @media (min-width: #{list.nth($containers, 1) + px}) {
+      #{$property}: calc(list.nth($values, 1) * 1px)
+    };
+    @media (max-width: #{list.nth($canvases, -1) + px}) {
+      #{$property}: calc(list.nth($values, -1) * 1px)
+    }
+    @for $index from 1 to list.length($values) {
+      $nowCanvas: list.nth($canvases, $index + 1);
+      $nowContainer: list.nth($containers, $index);
+      $nowMinValue: list.nth($values, $index + 1);
+      $nowMaxValue: list.nth($values, $index);
+      @media (max-width: #{$nowContainer + px}) and (min-width: #{$nowCanvas + px}) {
+        #{$property}: calc(($nowMinValue + ($nowMaxValue - $nowMinValue) * ((var(--viewport-width) - $nowCanvas) / (($nowContainer - $nowCanvas)))) * 1px);
+      }
+    }
+    @if list.length($values) >= 3 {
+      @for $index from 2 to list.length($values) {
+        $nowCanvas: list.nth($canvases, $index);
+        $nowContainer: list.nth($containers, $index);
+        $nowValue: list.nth($values, $index);
+        @media (max-width: #{$nowCanvas + px}) and (min-width: #{$nowContainer + px}) {
+          #{$property}: calc($nowValue * 1px)
+        }
+      }
+
+    }
+  }
+}
+@mixin adaptivePercentProperty($property, $values: (0, 0), $screenResolutions: $screenResolutions) {
+  //Небольшая валидация: размеров адаптива должно быть не меньше 2, и колво значений свойств должно совпадать с колво значений для canvases и containers
+  $canvases: getScreenCanvases($screenResolutions);
+  $containers: getScreenContainers($screenResolutions);
+  @if list.length($values) >= 2 and list.length($canvases) == list.length($containers) and list.length($canvases) == list.length($values) {
+    @media (min-width: #{list.nth($containers, 1) + px}) {
+      #{$property}: calc(list.nth($values, 1) / 100 * 100%)
+    };
+    @media (max-width: #{list.nth($canvases, -1) + px}) {
+      #{$property}: calc(list.nth($values, -1) / 100 * 100%)
+    }
+    @for $index from 1 to list.length($values) {
+      $nowCanvas: list.nth($canvases, $index + 1);
+      $nowContainer: list.nth($containers, $index);
+      $nowMinValue: list.nth($values, $index + 1);
+      $nowMaxValue: list.nth($values, $index);
+      @media (max-width: #{$nowContainer + px}) and (min-width: #{$nowCanvas + px}) {
+        #{$property}: calc(($nowMinValue + ($nowMaxValue - $nowMinValue) * ((var(--viewport-width) - $nowCanvas) / (($nowContainer - $nowCanvas)))) / 100 * 100%);
+      }
+    }
+    @if list.length($values) >= 3 {
+      @for $index from 2 to list.length($values) {
+        $nowCanvas: list.nth($canvases, $index);
+        $nowContainer: list.nth($containers, $index);
+        $nowValue: list.nth($values, $index);
+        @media (max-width: #{$nowCanvas + px}) and (min-width: #{$nowContainer + px}) {
+          #{$property}: calc($nowValue / 100 * 100%)
+        }
+      }
+
+    }
+  }
+}
+//Принимает в values значение подразумавающееся в !!!пикселях
+//По умл значение fz у html - !!!14px!!! (в zeroingStyles также стоит 14, если поменяю там поменять и здесь)
+@mixin adaptiveRemProperty($property, $pixelValues: (0, 0), $screenResolutions: $screenResolutions, $baseFontSize: $baseFontSize) {
+  //Небольшая валидация: размеров адаптива должно быть не меньше 2, и колво значений свойств должно совпадать с колво значений для canvases и containers
+  $canvases: getScreenCanvases($screenResolutions);
+  $containers: getScreenContainers($screenResolutions);
+
+  $values: ();
+  @each $pixelValue in $pixelValues {
+    $values: list.append($values, math.div($pixelValue, $baseFontSize));
+  }
+
+  @if list.length($values) >= 2 and list.length($canvases) == list.length($containers) and list.length($canvases) == list.length($values) {
+    @media (min-width: #{list.nth($containers, 1) + px}) {
+      #{$property}: calc(list.nth($values, 1) * 1rem)
+    };
+    @media (max-width: #{list.nth($canvases, -1) + px}) {
+      #{$property}: calc(list.nth($values, -1) * 1rem)
+    }
+    @for $index from 1 to list.length($values) {
+      $nowCanvas: list.nth($canvases, $index + 1);
+      $nowContainer: list.nth($containers, $index);
+      $nowMinValue: list.nth($values, $index + 1);
+      $nowMaxValue: list.nth($values, $index);
+      @media (max-width: #{$nowContainer + px}) and (min-width: #{$nowCanvas + px}) {
+        #{$property}: calc(($nowMinValue + ($nowMaxValue - $nowMinValue) * ((var(--viewport-width) - $nowCanvas) / (($nowContainer - $nowCanvas)))) * 1rem);
+      }
+    }
+    @if list.length($values) >= 3 {
+      @for $index from 2 to list.length($values) {
+        $nowCanvas: list.nth($canvases, $index);
+        $nowContainer: list.nth($containers, $index);
+        $nowValue: list.nth($values, $index);
+        @media (max-width: #{$nowCanvas + px}) and (min-width: #{$nowContainer + px}) {
+          #{$property}: calc($nowValue * 1rem)
+        }
+      }
+
+    }
+  }
+}
+
+
+@mixin adaptiveVariable($variable, $values: (0, 0), $screenResolutions: $screenResolutions) {
+  //Небольшая валидация: размеров адаптива должно быть не меньше 2, и колво значений свойств должно совпадать с колво значений для canvases и containers
+  $canvases: getScreenCanvases($screenResolutions);
+  $containers: getScreenContainers($screenResolutions);
+  @if list.length($values) >= 2 and list.length($canvases) == list.length($containers) and list.length($canvases) == list.length($values) {
+    @media (min-width: #{list.nth($containers, 1) + px}) {
+      #{"--" + $variable}: list.nth($values, 1)
+    };
+    @media (max-width: #{list.nth($canvases, -1) + px}) {
+      #{"--" + $variable}: list.nth($values, -1)
+    }
+    @for $index from 1 to list.length($values) {
+      $nowCanvas: list.nth($canvases, $index + 1);
+      $nowContainer: list.nth($containers, $index);
+      $nowMinValue: list.nth($values, $index + 1);
+      $nowMaxValue: list.nth($values, $index);
+      @media (max-width: #{$nowContainer + px}) and (min-width: #{$nowCanvas + px}) {
+        #{"--" + $variable}: calc($nowMinValue + ($nowMaxValue - $nowMinValue) * ((var(--viewport-width) - $nowCanvas) / (($nowContainer - $nowCanvas))));
+      }
+    }
+    @if list.length($values) >= 3 {
+      @for $index from 2 to list.length($values) {
+        $nowCanvas: list.nth($canvases, $index);
+        $nowContainer: list.nth($containers, $index);
+        $nowValue: list.nth($values, $index);
+        @media (max-width: #{$nowCanvas + px}) and (min-width: #{$nowContainer + px}) {
+          #{"--" + $variable}: $nowValue
+        }
+      }
+
+    }
+  }
+}
