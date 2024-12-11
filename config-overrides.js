@@ -4,8 +4,8 @@ module.exports = {
   webpack: (config) => {
     config.resolve.alias = {
       ...config.resolve.alias,
-      '@tools': path.resolve("F:/work/development/projects/PET/clocker/src/styles/tools"),
-      '@components': path.resolve("F:/work/development/projects/PET/clocker/src/components"),
+      '@tools': path.resolve(__dirname + "/src/styles/tools"),
+      '@components': path.resolve(__dirname + "/src/components"),
     };
     // Настройка для обработки SCSS
     const scssRule = config.module.rules.find((rule) =>
