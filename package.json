@@ -4,16 +4,17 @@
   "private": true,
   "dependencies": {
     "cra-template": "1.2.0",
+    "lodash": "^4.17.21",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-scripts": "^5.0.1",
+    "uuid": "^11.0.3",
     "web-vitals": "^4.2.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start": "react-app-rewired start",
+    "build": "react-app-rewired build",
+    "test": "react-app-rewired test"
   },
   "eslintConfig": {
     "extends": [
@@ -35,7 +36,9 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "babel-plugin-module-resolver": "^5.0.2",
     "css-loader": "^7.1.2",
+    "react-app-rewired": "^2.2.1",
     "sass": "^1.82.0",
     "sass-loader": "^16.0.4",
     "style-loader": "^4.0.0"

@@ -42,7 +42,7 @@ $baseFontSize: 14;
   //Небольшая валидация: размеров адаптива должно быть не меньше 2, и колво значений свойств должно совпадать с колво значений для canvases и containers
   $canvases: getScreenCanvases($screenResolutions);
   $containers: getScreenContainers($screenResolutions);
-
+  
   @if list.length($values) >= 2 and list.length($canvases) == list.length($containers) and list.length($canvases) == list.length($values) {
     @media (min-width: #{list.nth($containers, 1) + px}) {
       #{$property}: calc(list.nth($values, 1) * 1px)

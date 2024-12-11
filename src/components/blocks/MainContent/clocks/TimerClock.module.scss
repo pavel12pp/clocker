@@ -1,0 +1,26 @@
+@use "@tools/adaptiveMixin.scss" as mixins;
+
+.clock {
+  display: flex;
+  width: 100%;
+  aspect-ratio: 1/1;
+  border: 2px solid var(--accentBrand-color);
+  border-radius: 50%;
+  background: conic-gradient(var(--accentBrandHover-color) calc(var(--remainTime) * 100%), transparent calc(var(--remainTime) * 100%));
+  justify-content: center;
+  align-items: center;
+  &__wrapper {
+    display: flex;
+    width: calc(100% - 40px);
+    aspect-ratio: 1/1;
+    border-radius: 50%;
+    border: 2px solid var(--accentBrand-color);
+    background-color: var(--secondary-bgColor);
+    align-items: center;
+    justify-content: center;
+  }
+  &__date {
+    color: var(--primary-textColor);
+    @include mixins.adaptivePixelProperty(font-size, (36, 28, 24));
+  }
+}

@@ -2,9 +2,9 @@ import React from 'react';
 
 const TimerUpdateSettingsPanel = () => {
   return (
-    <div>
+    <section style={{display: "none"}}>
 
-    </div>
+    </section>
   );
 };
 

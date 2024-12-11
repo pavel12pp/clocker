@@ -1,4 +1,4 @@
-@use "@scss-tools/adaptiveMixin.scss";
+@use "@tools/adaptiveMixin.scss" as mixins;
 
 .wrapper {
   display: flex;
@@ -11,11 +11,11 @@
 } 
 
 .main {
-  @include adaptiveVariable(container-margin, (80, 60, 20));
+  @include mixins.adaptiveVariable(container-margin, (80, 60, 20));
   display: grid;
   width: 100%;
-  max-width: calc(100vw - 100px);
+  max-width: calc(100vw - var(--container-margin) * 1px);
   background-color: black;
-  grid-template-columns: repeat(3, auto);
+  grid-template-columns: repeat(3, 1fr);
   flex-grow: 1;
 }
